@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2c6693">
+<meta name="color-scheme" content="light">
+<title>NMCP Malaria Partner Mapping · Ministry of Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#eef2f6; --s1:#ffffff; --s2:#f7f9fb; --s3:#e6eef6; --line:#cfdbe7; --line2:#e3eaf1;
+  --ink:#0b2540; --muted:#1565c0; --faint:#147cd7;
+  --dhis:#2c6693; --dhis2:#1565c0; --dhis3:#0d47a1;
+  --sky:#56B4E9; --orange:#E69F00; --green:#009E73; --yellow:#F0E442;
+  --blue:#0072B2; --verm:#D55E00; --purple:#CC79A7; --on:#ffffff; --frame:#009E73;
+  --appw:560px;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html:not(.w-p){--appw:820px}
+html.w-l{--appw:100%}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.5 Roboto,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+input,select,textarea{font:inherit;font-weight:500;font-size:16px;color:var(--ink);background-color:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 13px;width:100%;min-width:0;appearance:none;-webkit-appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 52%,calc(100% - 13px) 52%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+select:disabled,input:disabled,input[readonly]{opacity:1;color:var(--dhis2);border-style:dashed;background-color:var(--s2)}
+input[type=date]{min-height:48px}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--dhis2);box-shadow:0 0 0 3px rgba(21,101,192,.18)}
+textarea{min-height:90px;resize:vertical}
+::placeholder{color:var(--dhis2);opacity:.6;font-weight:500}
+option,optgroup{background:#fff;color:var(--ink);font-weight:500}
+:focus-visible{outline:2px solid var(--dhis2);outline-offset:2px}
+h1,h2{color:var(--dhis3)}
+
+.app{max-width:var(--appw);margin:0 auto;min-height:100vh;min-height:100dvh;padding-bottom:110px}
+.frame{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);width:min(var(--appw),100%);border-left:6px solid var(--frame);border-right:6px solid var(--frame);pointer-events:none;z-index:15}
+
+/* header */
+.appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:16px;padding:20px 18px;background:var(--dhis);border-bottom:6px solid var(--frame);box-shadow:0 2px 6px rgba(11,37,64,.18)}
+.mohlogo{width:88px;height:88px;border-radius:50%;background:#fff;object-fit:contain;flex:0 0 auto;box-shadow:0 0 0 3px #fff}
+.ctxbtn{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
+.ctxbtn b{color:#fff;font-weight:700;font-size:clamp(18px,5.2vw,26px)}
+.ctxbtn small{color:#fff;font-weight:700;font-size:15px;margin-top:4px;opacity:.95}
+.menubtn{position:relative;width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.14);border:2px solid #fff;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.menubtn span{display:block;width:24px;height:3px;border-radius:2px;background:#fff;transition:transform .2s ease,opacity .2s ease}
+.menubtn.open span:nth-child(1){transform:translateY(9px) rotate(45deg)}
+.menubtn.open span:nth-child(2){opacity:0}
+.menubtn.open span:nth-child(3){transform:translateY(-9px) rotate(-45deg)}
+.bnav{position:absolute;top:calc(100% + 6px);right:12px;width:270px;display:none;flex-direction:column;gap:2px;padding:8px;background:#fff;border-radius:18px;box-shadow:0 12px 32px rgba(11,37,64,.28);outline:3px solid var(--frame);z-index:30}
+.bnav.open{display:flex;animation:drop .16s ease}
+@keyframes drop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.bnav button{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;font-size:15.5px;font-weight:700;color:var(--ink);text-align:left}
+.bnav button:hover{background:var(--s2)}
+.bnav button.on{background:#e3eef9;color:var(--dhis2)}
+.bnav svg{width:22px;height:22px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bnav hr{border:0;border-top:1px solid var(--line2);margin:4px 6px}
+
+/* footer */
+.foot{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(var(--appw),100%);z-index:20;background:var(--dhis);color:#fff;font-weight:700;text-align:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));border-top:6px solid var(--frame);display:flex;flex-direction:column;align-items:center;gap:3px}
+.foot .f1{font-size:clamp(10px,3.1vw,14px);white-space:nowrap}
+.foot .f2{font-size:clamp(10.5px,3vw,12.5px);line-height:1.35}
+.foot .sep{margin:0 .45em}
+
+main{padding:14px 18px 0}
+html:not(.w-p) main{padding-left:24px;padding-right:24px}
+.lh{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--dhis3);margin:22px 4px 10px}
+.lh:first-child{margin-top:8px}
+.lh::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--dhis2),transparent)}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(11,37,64,.06)}
+.muted{color:var(--dhis2)}.sm{font-size:13px}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--s3);color:var(--dhis3)}
+.note{border-left:4px solid var(--orange);background:#fff4dc;padding:10px 12px;border-radius:10px;font-size:14px;margin:0 0 14px;color:var(--ink)}
+.empty{padding:32px 16px;text-align:center;color:var(--dhis2);font-weight:700}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 18px;border-radius:14px;background:var(--dhis2);color:#fff;font-weight:700;font-size:15px;flex:1;box-shadow:0 1px 2px rgba(13,71,161,.25)}
+.btn.sec{background:#fff;color:var(--dhis2);border:1.5px solid var(--dhis2);box-shadow:none}
+.btn.danger{background:var(--verm);color:#fff}
+.btn.sm{min-height:40px;padding:8px 14px;font-size:14px;flex:0 0 auto}
+.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.back{display:inline-flex;align-items:center;gap:8px;color:var(--dhis2);font-weight:700;font-size:15px;margin:0 0 12px;padding:9px 16px 9px 12px;min-height:44px;background:#fff;border:1.5px solid var(--dhis2);border-radius:999px}
+.back:hover{background:#e3eef9}
+.backs{display:flex;gap:8px 10px;flex-wrap:wrap;margin:0 0 12px}.backs .back{margin:0}
+.back svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* sheet cards on the home page */
+.cards{display:grid;grid-template-columns:1fr;gap:14px}
+html:not(.w-p) .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+html.w-l .cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.rcard{display:flex;flex-direction:column;width:100%;height:100%;text-align:left;padding:0;border-radius:22px;border:2px solid var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 22%,#fff) 0%,#fff 100%);transition:transform .12s ease}
+.rcard:active{transform:scale(.985)}
+.rcard:hover{border-color:var(--dhis3)}
+.rcard .top{display:flex;align-items:center;gap:14px;padding:16px 16px 6px}
+.rb{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:var(--c);color:#07121b;flex:0 0 auto}
+.rb svg{width:32px;height:32px;fill:none;stroke:#07121b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rcard .tt{flex:1;min-width:0;display:flex;flex-direction:column}
+.rcard .tt span{font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--dhis2)}
+.rcard .tt b{font-size:18px;font-weight:900;color:var(--ink);line-height:1.2}
+.rcard p{margin:0;padding:6px 16px 0;font-size:14px;color:var(--ink);flex:1}
+.rcard .bot{display:flex;align-items:center;gap:10px;padding:12px 16px 16px}
+.cnt{min-width:38px;text-align:center;font-weight:900;border-radius:999px;padding:4px 12px;background:var(--dhis2);color:#fff;font-size:14px}
+.cnt.z{background:#fff;color:var(--dhis2);border:1.5px solid var(--line)}
+.go{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--c);flex:0 0 auto;margin-left:auto}
+.go svg{width:20px;height:20px;fill:none;stroke:#07121b;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* page heading */
+.phd{display:flex;align-items:center;gap:14px;margin:4px 0 14px}
+.phd .rb{width:52px;height:52px;border-radius:14px}
+.phd .rb svg{width:26px;height:26px}
+.phd h1{margin:0;font-size:24px;font-weight:900;line-height:1.15}
+.phd small{display:block;color:var(--dhis2);font-weight:700;font-size:13px}
+
+/* text pages */
+.prose p{margin:0 0 12px;font-size:15.5px;line-height:1.6}
+.prose p:last-child{margin-bottom:0}
+.prose h2{font-size:18px;margin:0 0 10px}
+.irow{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line2)}
+.irow:last-child{border-bottom:0}
+.irow .in{width:34px;height:34px;border-radius:50%;background:var(--dhis2);color:#fff;font-weight:900;display:grid;place-items:center;flex:0 0 auto}
+.irow .in.k{background:#e3eef9;color:var(--dhis3)}
+.irow .in.k svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.irow b{display:block;font-size:16px;color:var(--dhis3);margin-bottom:3px}
+.irow div{font-size:15px;line-height:1.55}
+
+/* records list */
+.tbar{display:flex;gap:10px;align-items:center;margin:0 0 12px;flex-wrap:wrap}
+.tbar input{flex:1;min-width:180px}
+.rl{display:grid;grid-template-columns:1fr;gap:10px}
+html.w-l .rl{grid-template-columns:repeat(2,minmax(0,1fr))}
+html.w-l .rl .empty{grid-column:1/-1}
+.rec{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:13px 14px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 3px rgba(11,37,64,.06)}
+.rec:hover{border-color:var(--dhis2)}
+.rec .rid{display:grid;place-items:center;font-family:"Roboto Mono",ui-monospace,monospace;min-width:46px;height:46px;padding:0 6px;border-radius:12px;background:var(--c,var(--sky));color:#07121b;font-weight:900;font-size:12px;flex:0 0 auto}
+.rec .rm{flex:1;min-width:0}
+.rec .rm b{display:block;font-size:15.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec .rm small{display:block;font-size:13px;color:var(--dhis2);font-weight:700}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tg{font-size:12px;font-weight:700;border-radius:6px;padding:3px 8px;background:#e3eef9;color:var(--dhis3);border:1px solid #9cc0e6}
+.tg.ok{background:#dff3ec;color:#00664a;border-color:#8fd3bd}
+.tg.off{background:#f7e6f0;color:#8a3b6a;border-color:#e3b3cf}
+.chev{width:20px;height:20px;fill:none;stroke:var(--faint);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+
+/* form: every column of the sheet on its own row */
+.allform{display:flex;flex-direction:column;gap:14px;padding-bottom:20px}
+html:not(.w-p) .allform{max-width:820px;margin:0 auto}
+.fsec{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.fsh{display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--dhis);color:#fff;font-size:16px;font-weight:900}
+.fsh i{font-style:normal;width:28px;height:28px;border-radius:50%;background:#fff;color:var(--dhis);display:grid;place-items:center;font-size:14px;font-weight:900;flex:0 0 auto}
+.fld{padding:16px;border-bottom:1px solid var(--line2)}
+.fld:last-child{border-bottom:0}
+.fld>label{font-size:16.5px;font-weight:900;color:var(--dhis3);margin-bottom:10px;display:flex;gap:8px;align-items:baseline}
+.fld>label .cl{font-family:"Roboto Mono",ui-monospace,monospace;font-size:12px;font-weight:700;color:#fff;background:var(--dhis2);border-radius:6px;padding:1px 7px;flex:0 0 auto}
+.req{color:var(--verm)}
+.hint{color:var(--dhis2);font-size:13px;font-weight:500;margin:-4px 0 8px}
+.ferr{color:var(--verm);font-size:13px;font-weight:700;margin-top:6px}
+.ferr:empty{display:none}
+.fld.bad input,.fld.bad select,.fld.bad textarea{border-color:var(--verm)}
+.fld.hid{display:none}
+.mdrop{position:relative}
+.mtog{display:flex;align-items:center;width:100%;min-height:48px;text-align:left;padding:9px 40px 9px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 52%,calc(100% - 13px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+.mtog[aria-expanded="true"]{border-color:var(--dhis2);box-shadow:0 0 0 3px rgba(21,101,192,.18)}
+.msum{display:flex;flex-wrap:wrap;gap:6px}
+.mph{color:var(--dhis2);opacity:.7;font-size:16px}
+.mpanel{margin-top:8px;border:1.5px solid var(--dhis2);border-radius:12px;padding:10px;background:var(--s2);display:flex;flex-direction:column;gap:10px}
+.mpanel[hidden]{display:none}
+.mdone{align-self:flex-end}
+.fld.bad .mtog{border-color:var(--verm)}
+.fld.bad .checks{outline:1px dashed var(--verm);outline-offset:4px;border-radius:10px}
+.checks{display:flex;flex-direction:column;gap:8px}
+html:not(.w-p) .checks{display:grid;grid-template-columns:1fr 1fr}
+.ck{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border-radius:12px;padding:10px 12px;min-height:48px;font-size:15px;font-weight:700;background:#fff;color:var(--ink);border:2px solid var(--line)}
+.ck .cbx{width:22px;height:22px;border-radius:6px;border:3px solid var(--dhis2);flex:0 0 auto;display:grid;place-items:center;background:#fff}
+.ck.on{background:#e3eef9;border-color:var(--dhis2);color:var(--dhis3)}
+.ck.on .cbx{background:var(--dhis2)}
+.ck.on .cbx::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ck:disabled{opacity:.45;cursor:not-allowed}
+.fbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(var(--appw),100%);z-index:25;display:flex;gap:10px;padding:10px 14px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.97);border-top:6px solid var(--frame);box-shadow:0 -2px 8px rgba(11,37,64,.06)}
+html:not(.w-p) .fbar{justify-content:center}
+html:not(.w-p) .fbar .btn{max-width:260px}
+body[data-view="form"] .foot{display:none}
+
+/* reference lists */
+.refgrid{display:grid;grid-template-columns:1fr;gap:12px}
+html:not(.w-p) .refgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+html.w-l .refgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+details.reg{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(11,37,64,.06);align-self:start}
+details.reg>summary{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;list-style:none}
+details.reg>summary::-webkit-details-marker{display:none}
+details.reg>summary::after{content:"";width:9px;height:9px;border:solid var(--dhis2);border-width:0 3px 3px 0;transform:rotate(45deg);margin:0 4px 4px auto;transition:transform .15s;flex:0 0 auto}
+details.reg[open]>summary::after{transform:rotate(-135deg);margin-bottom:-2px}
+details.reg[open]>summary{border-bottom:1px solid var(--line)}
+details.reg .gname{font-size:15.5px;font-weight:900;color:var(--dhis3);flex:1;min-width:0}
+details.reg .gname small{display:block;font-size:12.5px;font-weight:700;color:var(--dhis2)}
+.vlist{display:flex;flex-direction:column}
+.vrow{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line2);font-size:14.5px}
+.vrow:last-child{border-bottom:0}
+.vrow i{font-style:normal;font-family:"Roboto Mono",ui-monospace,monospace;font-size:12px;color:var(--dhis2);min-width:22px}
+.vrow .use{margin-left:auto;font-size:12.5px;font-weight:900;color:var(--dhis3);background:var(--s3);border-radius:999px;padding:2px 9px}
+.fs{font-size:11.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--dhis3);padding:12px 14px 4px;background:var(--s2);border-bottom:1px solid var(--line2)}
+.chl{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 12px;border-bottom:1px solid var(--line2)}
+.chl:last-child{border-bottom:0}
+.chl .dn{width:100%;font-weight:900;color:var(--ink);font-size:14px}
+.vc{font-size:12.5px;border-radius:6px;padding:2px 8px;background:#e3eef9;color:var(--dhis3);font-weight:700}
+.srcl{font-size:12.5px;color:var(--dhis2);margin:12px 4px 0;word-break:break-word}
+
+/* sheet and toast */
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
+.sheet.on{display:flex}
+html:not(.w-p) .sheet{align-items:center;padding:24px}
+.sbox{width:min(560px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:up .2s ease}
+html:not(.w-p) .sbox{border-radius:22px}
+@keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
+.sbox h2{margin:0 0 8px;font-size:19px}
+.sbox p{margin:0 0 16px}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--dhis3);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;font-weight:700;z-index:60;transition:.2s;pointer-events:none;max-width:90vw}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:360px){.mohlogo{width:70px;height:70px}.menubtn{width:46px;height:46px}}
+@media (max-height:500px) and (orientation:landscape){.appbar{padding:8px 16px}.mohlogo{width:48px;height:48px}}
+@media print{.foot,.frame,.appbar,.fbar,.tbar{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body data-view="home">
+<div class="app">
+  <header class="appbar">
+    <img class="mohlogo" src="data:image/jpeg;base64,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" alt="Ministry of Health, Sierra Leone">
+    <div class="ctxbtn"><b>Malaria Partner Mapping</b><small>National Malaria Control Programme</small></div>
+    <button class="menubtn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="bnav"><span></span><span></span><span></span></button>
+    <nav class="bnav" id="bnav" aria-label="Main menu"></nav>
+  </header>
+  <main id="main"></main>
+</div>
+<footer class="foot"><span class="f1">Ministry of Health <span class="sep">|</span> Government of Sierra Leone</span><span class="f2">Designed by Informatics Consultancy Firm – Sierra Leone (ICF-SL)</span></footer>
+<div class="frame" aria-hidden="true"></div>
+<div class="sheet" id="sheet"><div class="sbox" id="sbox" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===================================================================
+   NMCP Malaria Partner Mapping Tool, v1.1
+   Each sheet of the workbook is a card. In the data sheets every
+   column of the sheet is one row of the form, and the drop-down
+   lists come from the Reference Lists sheet.
+   =================================================================== */
+const REF = {"otype": ["Government", "Donor", "Multilateral agency", "International NGO", "Local NGO", "CBO", "CSO", "Faith-based organization", "Academic / Research", "Private sector", "Professional association", "Other"], "parea": ["Public health", "Mining", "Regulation", "Banking", "Agriculture", "Advocacy", "Foundation", "Revenue", "Philanthropy", "Other"], "mou": ["Yes", "No", "N/A"], "ostat": ["Active", "Closed"], "fund": ["GoSL", "Global Fund", "U.S. Government", "World Bank", "Gavi", "WHO", "UNICEF", "UNFPA", "European Union", "Private foundation", "Partner own funds", "Other"], "tarea": ["Case management", "Community case management (iCCM)", "Malaria in pregnancy", "Malaria chemoprevention", "Malaria vaccination", "Vector control – ITNs", "Vector control – IRS", "Vector control – SE", "Larval source management", "Entomological surveillance", "Epidemiological surveillance", "Laboratory / diagnostics", "Supply chain / commodities", "Social and behaviour change", "Digital health", "Private-sector service provision", "Health systems strengthening", "Monitoring, evaluation and learning", "Operational research", "Technical advisory", "Corporate Social Responsibility"], "level": ["National", "Regional", "District", "Public health facility", "Private health facility", "Community", "Multiple levels"], "twg": ["Case Management", "IVM", "PSM", "MIP", "PMC(iPTI)", "SBC", "M+E", "RBM", "Private Sector", "Digital Health"], "dist": [["Bo", "Southern"], ["Bombali", "Northern"], ["Bonthe", "Southern"], ["Falaba", "Northern"], ["Kailahun", "Eastern"], ["Kambia", "North Western"], ["Karene", "North Western"], ["Kenema", "Eastern"], ["Koinadugu", "Northern"], ["Kono", "Eastern"], ["Moyamba", "Southern"], ["Port Loko", "North Western"], ["Pujehun", "Southern"], ["Tonkolili", "Northern"], ["Western Area Rural", "Western"], ["Western Area Urban", "Western"]], "chief": [["Dea", "Kailahun", "Eastern"], ["Jahn", "Kailahun", "Eastern"], ["Jaluahun", "Kailahun", "Eastern"], ["Jawei", "Kailahun", "Eastern"], ["Kissi Kama", "Kailahun", "Eastern"], ["Kissi Teng", "Kailahun", "Eastern"], ["Kissi Tongi", "Kailahun", "Eastern"], ["Luawa", "Kailahun", "Eastern"], ["Malema", "Kailahun", "Eastern"], ["Mandu", "Kailahun", "Eastern"], ["Peje Bongre", "Kailahun", "Eastern"], ["Peje West", "Kailahun", "Eastern"], ["Penguia", "Kailahun", "Eastern"], ["Upper Bambara", "Kailahun", "Eastern"], ["Yawei", "Kailahun", "Eastern"], ["Dama", "Kenema", "Eastern"], ["Dodo", "Kenema", "Eastern"], ["Gaura", "Kenema", "Eastern"], ["Gorama Mende", "Kenema", "Eastern"], ["Kandu Leppiam", "Kenema", "Eastern"], ["Koya", "Kenema", "Eastern"], ["Langurama Ya", "Kenema", "Eastern"], ["Lower Bambara", "Kenema", "Eastern"], ["Malegohun", "Kenema", "Eastern"], ["Niawa", "Kenema", "Eastern"], ["Nomo", "Kenema", "Eastern"], ["Nongowa", "Kenema", "Eastern"], ["Simbaru", "Kenema", "Eastern"], ["Small Bo", "Kenema", "Eastern"], ["Tunkia", "Kenema", "Eastern"], ["Wando", "Kenema", "Eastern"], ["Fiama", "Kono", "Eastern"], ["Gbane Kandor", "Kono", "Eastern"], ["Gbane", "Kono", "Eastern"], ["Gbense", "Kono", "Eastern"], ["Gorama Kono", "Kono", "Eastern"], ["Kamara", "Kono", "Eastern"], ["Lei", "Kono", "Eastern"], ["Mafindor", "Kono", "Eastern"], ["Nimikoro", "Kono", "Eastern"], ["Nimiyama", "Kono", "Eastern"], ["Sandor", "Kono", "Eastern"], ["Soa", "Kono", "Eastern"], ["Tankoro", "Kono", "Eastern"], ["Toli", "Kono", "Eastern"], ["Biriwa", "Bombali", "Northern"], ["Bombali Shebora", "Bombali", "Northern"], ["Bombali Siari", "Bombali", "Northern"], ["Gbanti", "Bombali", "Northern"], ["Gbendembu", "Bombali", "Northern"], ["Kamaranka", "Bombali", "Northern"], ["Magbaiamba Ndowahun", "Bombali", "Northern"], ["Makari", "Bombali", "Northern"], ["Mara", "Bombali", "Northern"], ["Ngowahun", "Bombali", "Northern"], ["Paki Massabong", "Bombali", "Northern"], ["Safroko Limba", "Bombali", "Northern"], ["Delemandugu", "Falaba", "Northern"], ["Dembelia", "Falaba", "Northern"], ["Dembelia Sikunia", "Falaba", "Northern"], ["Folasaba", "Falaba", "Northern"], ["Kamadu Yiraia", "Falaba", "Northern"], ["Kebelia", "Falaba", "Northern"], ["Kulor Saradu", "Falaba", "Northern"], ["Mongo", "Falaba", "Northern"], ["Morfindugu", "Falaba", "Northern"], ["Neya", "Falaba", "Northern"], ["Nyedu", "Falaba", "Northern"], ["Sulima", "Falaba", "Northern"], ["Wollay Barawa", "Falaba", "Northern"], ["Diang", "Koinadugu", "Northern"], ["Gbonkobon Kayaka", "Koinadugu", "Northern"], ["Kalian", "Koinadugu", "Northern"], ["Kamukeh", "Koinadugu", "Northern"], ["Kasunko KaKellian", "Koinadugu", "Northern"], ["Nieni", "Koinadugu", "Northern"], ["Sengbe", "Koinadugu", "Northern"], ["Tamiso", "Koinadugu", "Northern"], ["Wara-Wara Bafodia", "Koinadugu", "Northern"], ["Wara-Wara Yagala", "Koinadugu", "Northern"], ["Dansogoia", "Tonkolili", "Northern"], ["Gbonkolenken Masankong", "Tonkolili", "Northern"], ["Kafe", "Tonkolili", "Northern"], ["Kalanthuba", "Tonkolili", "Northern"], ["Kholifa Mabang", "Tonkolili", "Northern"], ["Kholifa Mamuntha Mayosso", "Tonkolili", "Northern"], ["Kholifa Rowalla", "Tonkolili", "Northern"], ["Kunike Barina", "Tonkolili", "Northern"], ["Kunike Folawusu", "Tonkolili", "Northern"], ["Kunike Sanda", "Tonkolili", "Northern"], ["Malal", "Tonkolili", "Northern"], ["Mayeppoh", "Tonkolili", "Northern"], ["Poli", "Tonkolili", "Northern"], ["Sambaia", "Tonkolili", "Northern"], ["Simiria", "Tonkolili", "Northern"], ["Tane", "Tonkolili", "Northern"], ["Yele", "Tonkolili", "Northern"], ["Yoni Mabanta", "Tonkolili", "Northern"], ["Yoni Mamaila", "Tonkolili", "Northern"], ["Briama", "Kambia", "North Western"], ["Dixing", "Kambia", "North Western"], ["Gbinle", "Kambia", "North Western"], ["Khonimakha", "Kambia", "North Western"], ["Magbema", "Kambia", "North Western"], ["Mambolo", "Kambia", "North Western"], ["Masungbala", "Kambia", "North Western"], ["Munu Thala", "Kambia", "North Western"], ["Samu", "Kambia", "North Western"], ["Tonko Limba", "Kambia", "North Western"], ["Buya", "Karene", "North Western"], ["Debia", "Karene", "North Western"], ["Gbanti", "Karene", "North Western"], ["Libeisaygahun-Gbombahun", "Karene", "North Western"], ["Mafonda Makerembay", "Karene", "North Western"], ["Romende", "Karene", "North Western"], ["Safroko", "Karene", "North Western"], ["Sanda Loko", "Karene", "North Western"], ["Sanda Magbolontor", "Karene", "North Western"], ["Sanda Tenraren", "Karene", "North Western"], ["Sella Limba", "Karene", "North Western"], ["Tambakha Simibungie", "Karene", "North Western"], ["Tambakha Yobangie", "Karene", "North Western"], ["Bakeh Loko", "Port Loko", "North Western"], ["Bureh", "Port Loko", "North Western"], ["Kaffu Bullom", "Port Loko", "North Western"], ["Kamasondo", "Port Loko", "North Western"], ["Kaseh", "Port Loko", "North Western"], ["Koya", "Port Loko", "North Western"], ["Loko Massama", "Port Loko", "North Western"], ["Maconteh", "Port Loko", "North Western"], ["Maforki", "Port Loko", "North Western"], ["Makama", "Port Loko", "North Western"], ["Marampa", "Port Loko", "North Western"], ["Masimera", "Port Loko", "North Western"], ["Tinkatopa", "Port Loko", "North Western"], ["Badjia", "Bo", "Southern"], ["Bagbo", "Bo", "Southern"], ["Bagbwe", "Bo", "Southern"], ["Baoma", "Bo", "Southern"], ["Bongor", "Bo", "Southern"], ["Bumpe-Gao", "Bo", "Southern"], ["Gbo", "Bo", "Southern"], ["Jaiama", "Bo", "Southern"], ["Kakua", "Bo", "Southern"], ["Komboya", "Bo", "Southern"], ["Lugbu", "Bo", "Southern"], ["Niawa Lenga", "Bo", "Southern"], ["Selenga", "Bo", "Southern"], ["Tikonko", "Bo", "Southern"], ["Valunia", "Bo", "Southern"], ["Wonde", "Bo", "Southern"], ["Bendu", "Bonthe", "Southern"], ["Bum", "Bonthe", "Southern"], ["Dema", "Bonthe", "Southern"], ["Imperri", "Bonthe", "Southern"], ["Jong", "Bonthe", "Southern"], ["Kpanda Kemo", "Bonthe", "Southern"], ["Kwamebai Krim", "Bonthe", "Southern"], ["Nongoba Bullom", "Bonthe", "Southern"], ["Sittia", "Bonthe", "Southern"], ["Sogbini", "Bonthe", "Southern"], ["Yawbeko", "Bonthe", "Southern"], ["Bagruwa", "Moyamba", "Southern"], ["Bumpe", "Moyamba", "Southern"], ["Dasse", "Moyamba", "Southern"], ["Fakunya", "Moyamba", "Southern"], ["Kagboro", "Moyamba", "Southern"], ["Kaiyamba", "Moyamba", "Southern"], ["Kamajei", "Moyamba", "Southern"], ["Kongbora", "Moyamba", "Southern"], ["Kori", "Moyamba", "Southern"], ["Kowa", "Moyamba", "Southern"], ["Lower Banta", "Moyamba", "Southern"], ["Ribbi", "Moyamba", "Southern"], ["Timdale", "Moyamba", "Southern"], ["Upper Banta", "Moyamba", "Southern"], ["Barri", "Pujehun", "Southern"], ["Gallines", "Pujehun", "Southern"], ["Kagonde", "Pujehun", "Southern"], ["Kpaka", "Pujehun", "Southern"], ["Kpanga", "Pujehun", "Southern"], ["Makpele", "Pujehun", "Southern"], ["Malen", "Pujehun", "Southern"], ["Mano Sakrim", "Pujehun", "Southern"], ["Panga Krim", "Pujehun", "Southern"], ["Peje", "Pujehun", "Southern"], ["Perri", "Pujehun", "Southern"], ["Soro Gbema", "Pujehun", "Southern"], ["Sowa", "Pujehun", "Southern"], ["Yekomo Kpukumu", "Pujehun", "Southern"], ["Goderich Zone", "Western Area Rural", "Western"], ["Hastings Zone", "Western Area Rural", "Western"], ["Lakka Zone", "Western Area Rural", "Western"], ["Leicester Zone", "Western Area Rural", "Western"], ["Newton Zone", "Western Area Rural", "Western"], ["Regent Zone", "Western Area Rural", "Western"], ["Songo Zone", "Western Area Rural", "Western"], ["Tombo Zone", "Western Area Rural", "Western"], ["Waterloo Rural", "Western Area Rural", "Western"], ["York Rural", "Western Area Rural", "Western"], ["Central I", "Western Area Urban", "Western"], ["Central II", "Western Area Urban", "Western"], ["East I", "Western Area Urban", "Western"], ["East II", "Western Area Urban", "Western"], ["East III", "Western Area Urban", "Western"], ["West I", "Western Area Urban", "Western"], ["West II", "Western Area Urban", "Western"], ["West III", "Western Area Urban", "Western"]], "src": "Source: Electoral Commission for Sierra Leone (190 chiefdoms): https://ec.gov.sl/wards/ — names/district assignments cross-checked against https://www.sierra-leone.org/chiefdoms.html. Western Area zones follow the Ministry of Health DHIS2 organisation units."};
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+/* ---------- icons (plain SVG strokes) ---------- */
+const IC = {
+  intro:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg>',
+  instr:'<svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>',
+  dir:'<svg viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h8l6 6v12"/><path d="M14 3v6h6M8 13h8M8 17h5M3 21h18"/></svg>',
+  tech:'<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.6"/></svg>',
+  con:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.5a5 5 0 0 1 5.5 5"/></svg>',
+  ref:'<svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h6M8 11h6"/></svg>',
+  home:'<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  down:'<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"/></svg>',
+  plus:'<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  back:'<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+  go:'<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
+  mail:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+  shield:'<svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/></svg>',
+  check:'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+};
+
+/* ---------- the workbook sheets ---------- */
+const SHEETS = [
+  { k:'intro', n:'Introduction', t:'Introduction', c:'#56B4E9', d:'Why NMCP is mapping malaria partners and who should take part.' },
+  { k:'instr', n:'1. Instructions', t:'Instructions', c:'#F0E442', d:'How to complete the workbook, data quality and confidentiality.' },
+  { k:'dir', n:'2. Partner Directory', t:'Partner Directory', c:'#009E73', d:'One entry per organization, with its type, funders, MOU status and focal person.' },
+  { k:'tech', n:'3. Technical Area', t:'Technical Area', c:'#E69F00', d:'One entry for each partner, intervention, district and chiefdom combination.' },
+  { k:'con', n:'4. Coordination Contacts', t:'Coordination Contacts', c:'#CC79A7', d:'People who coordinate programmes and the working groups they can join.' },
+  { k:'ref', n:'Reference Lists', t:'Reference Lists', c:'#0072B2', d:'The controlled vocabulary behind every drop-down list in the tool.' }
+];
+const SH = k => SHEETS.find(s => s.k === k);
+
+/* districts grouped by region, chiefdoms by district */
+const REGIONS = []; REF.dist.forEach(([d, r]) => { if (!REGIONS.includes(r)) REGIONS.push(r); });
+const DIST_REGION = Object.fromEntries(REF.dist);
+const CHIEF_BY_DIST = {}; REF.chief.forEach(([c, d]) => (CHIEF_BY_DIST[d] = CHIEF_BY_DIST[d] || []).push(c));
+
+/* ---------- columns of each data sheet, in workbook order ---------- */
+/* type: text, email, tel, date, area, select, multi, partner, auto */
+const COLS = {
+  dir: [
+    { k:'pid', l:'Partner ID', req:1, type:'auto', hint:'Given automatically when you save: the acronym followed by the submission date and time (DDMMYYYYHHMMSS), for example ICF12112026063744. Use this same ID throughout the workbook.' },
+    { k:'name', l:'Organization Name', req:1, type:'text' },
+    { k:'acr', l:'Acronym', type:'text' },
+    { k:'otype', l:'Organization Type', req:1, type:'select', o:REF.otype },
+    { k:'parea', l:'Professional Area', req:1, type:'select', o:REF.parea },
+    { k:'ministry', l:'Lead / Host Ministry', type:'text', ph:'For example MoH' },
+    { k:'pfund', l:'Primary Funder', req:1, type:'select', o:REF.fund },
+    { k:'sfund', l:'Secondary Funder(s)', type:'mdrop', o:REF.fund, hint:'Optional. Open the list and tick all that apply. The primary funder is not repeated here.', not:'pfund' },
+    { k:'focal', l:'Country Lead / Focal Person', req:1, type:'text' },
+    { k:'title', l:'Title', req:1, type:'text' },
+    { k:'email', l:'Email', req:1, type:'email' },
+    { k:'phone', l:'Phone / WhatsApp', req:1, type:'tel', ph:'+232' },
+    { k:'office', l:'Office Location', req:1, type:'text' },
+    { k:'web', l:'Website', req:1, type:'text', ph:'https://' },
+    { k:'mou', l:'MOU Status with the line ministry', req:1, type:'select', o:REF.mou, hint:'If the answer is No or N/A, the start and end dates are skipped.' },
+    { k:'sd', l:'Start Date', req:1, type:'date', show:o => o.mou === 'Yes' },
+    { k:'ed', l:'End Date', req:1, type:'date', show:o => o.mou === 'Yes' },
+    { k:'ostat', l:'Overall Organizational Status', req:1, type:'select', o:REF.ostat },
+    { k:'notes', l:'Notes / Key Strengths', req:1, type:'area' }
+  ],
+  tech: [
+    { k:'pid', l:'Partner ID', req:1, type:'partner', hint:'Choose the organization from the Partner Directory.' },
+    { k:'pname', l:'Partner Name', req:1, type:'auto', hint:'Filled from the Partner Directory.' },
+    { k:'tarea', l:'Intervention / Technical Area', req:1, type:'select', o:REF.tarea },
+    { k:'act', l:'Activity / Project Name', type:'text' },
+    { k:'desc', l:'Activity Description', type:'area' },
+    { k:'level', l:'Implementation Level', req:1, type:'select', o:REF.level },
+    { k:'dist', l:'District', req:1, type:'district' },
+    { k:'chief', l:'Chiefdom', type:'chiefdom', hint:'Choose the district first. Use one entry for each chiefdom. For Western Area Rural and Western Area Urban, choose the zone.' },
+    { k:'tpop', l:'Target Population', type:'text' },
+    { k:'tfac', l:'Target Facilities / Communities', type:'area' },
+    { k:'pfund', l:'Primary Funder', type:'select', o:REF.fund },
+    { k:'fy', l:'Funding Period / FY', type:'text', ph:'For example FY2026' },
+    { k:'sd', l:'Start Date', type:'date' },
+    { k:'ed', l:'End Date', type:'date' },
+    { k:'status', l:'Status', req:1, type:'select', o:REF.ostat },
+    { k:'kout', l:'Key Output / Indicator', type:'text' },
+    { k:'atar', l:'Annual Target', type:'text' },
+    { k:'lach', l:'Latest Achievement', type:'text' }
+  ],
+  con: [
+    { k:'org', l:'Organization', type:'partner', hint:'Choose the organization from the Partner Directory.' },
+    { k:'cname', l:'Contact Name', req:1, type:'text' },
+    { k:'role', l:'Title / Role', type:'text' },
+    { k:'email', l:'Email', type:'email' },
+    { k:'phone', l:'Phone / WhatsApp', type:'tel', ph:'+232' },
+    { k:'twg', l:'Working Group of Interest', type:'multi', o:REF.twg, hint:'Tick every technical working group or coordination forum this person can join.' },
+    { k:'notes', l:'Notes', type:'area' }
+  ]
+};
+const LETTER = i => String.fromCharCode(65 + i);
+
+/* ---------- storage on this device ---------- */
+const KEY = 'nmcp_partner_mapping_v1';
+let DB = { dir:[], tech:[], con:[] };
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.dir) DB = Object.assign(DB, s); } catch(e){}
+function persist(){ try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch(e){ toast('This browser could not keep the data'); } }
+const partner = id => DB.dir.find(p => String(p.pid) === String(id));
+/* Partner ID is the date and time of submission: DDMMYYYYHHMMSS */
+function stampPid(acr, name){
+  /* the acronym in capitals; if there is none, the initials of the organization name */
+  let pre = String(acr || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (!pre) pre = String(name || '').split(/\s+/).filter(w => /^[A-Za-z]/.test(w) && !/^(of|and|the|for|in)$/i.test(w)).map(w => w[0].toUpperCase()).join('');
+  const d = new Date(), z = n => String(n).padStart(2, '0');
+  const fmt = () => pre + z(d.getDate()) + z(d.getMonth() + 1) + d.getFullYear() + z(d.getHours()) + z(d.getMinutes()) + z(d.getSeconds());
+  let id = fmt();
+  while (partner(id)){ d.setSeconds(d.getSeconds() + 1); id = fmt(); }
+  return id;
+}
+
+/* ---------- layout follows the window width ---------- */
+function applyWidth(){
+  const w = window.innerWidth, h = document.documentElement;
+  h.classList.remove('w-p','w-t','w-l'); h.classList.add(w >= 1100 ? 'w-l' : w >= 700 ? 'w-t' : 'w-p');
+}
+applyWidth(); addEventListener('resize', applyWidth);
+
+/* ---------- menu ---------- */
+function drawMenu(){
+  const cur = location.hash.slice(1) || 'home';
+  $('#bnav').innerHTML =
+    '<button data-go="home" class="' + (cur === 'home' ? 'on' : '') + '">' + IC.home + '<span>Home</span></button>' +
+    SHEETS.map(s => '<button data-go="' + s.k + '" class="' + (cur === s.k ? 'on' : '') + '">' + IC[s.k] + '<span>' + esc(s.n) + '</span></button>').join('') +
+    '<hr><button data-act="export">' + IC.down + '<span>Download workbook</span></button>';
+}
+function closeMenu(){ $('#bnav').classList.remove('open'); $('#menuBtn').classList.remove('open'); $('#menuBtn').setAttribute('aria-expanded','false'); }
+$('#menuBtn').addEventListener('click', e => {
+  e.stopPropagation(); drawMenu();
+  const o = $('#bnav').classList.toggle('open'); $('#menuBtn').classList.toggle('open', o); $('#menuBtn').setAttribute('aria-expanded', o);
+});
+document.addEventListener('click', e => { if (!e.target.closest('#bnav') && !e.target.closest('#menuBtn')) closeMenu(); });
+$('#bnav').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; closeMenu();
+  if (b.dataset.go) go(b.dataset.go); else if (b.dataset.act === 'export') exportWorkbook();
+});
+
+/* ---------- toast and dialog ---------- */
+let tt; function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2400); }
+function dialog(html){ $('#sbox').innerHTML = html; $('#sheet').classList.add('on'); }
+function closeDialog(){ $('#sheet').classList.remove('on'); }
+$('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeDialog(); });
+
+/* ---------- routing ---------- */
+const VIEWS = ['home','intro','instr','dir','tech','con','ref'];
+function go(v){ if (location.hash.slice(1) === v) render(); else location.hash = v; }
+addEventListener('hashchange', render);
+let FORM = null; /* {sheet, rec, isNew} while a form is open */
+
+function render(){
+  FORM = null;
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'home';
+  document.body.dataset.view = v;
+  const m = $('#main');
+  ({ home:vHome, intro:vIntro, instr:vInstr, dir:vList, tech:vList, con:vList, ref:vRef })[v](m, v);
+  scrollTo(0, 0);
+}
+function head(k, sub){
+  const s = SH(k);
+  return '<button class="back" data-go="home">' + IC.back + 'Back to Home</button>' +
+    '<div class="phd" style="--c:' + s.c + '"><div class="rb">' + IC[k] + '</div><div><h1>' + esc(s.t) + '</h1><small>' + esc(sub || s.n) + '</small></div></div>';
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b && !b.closest('#bnav')) go(b.dataset.go); });
+
+/* ---------- home: one card for each sheet ---------- */
+function vHome(m){
+  const n = { dir:DB.dir.length, tech:DB.tech.length, con:DB.con.length };
+  m.innerHTML = '<div class="lh">Workbook sheets</div><div class="cards">' + SHEETS.map(s => {
+    const c = s.k in n ? '<span class="cnt' + (n[s.k] ? '' : ' z') + '">' + n[s.k] + '</span><span class="muted sm">' + (n[s.k] === 1 ? 'entry' : 'entries') + '</span>'
+      : s.k === 'ref' ? '<span class="cnt z">' + (Object.keys(REF).length - 2) + '</span><span class="muted sm">lists</span>' : '<span class="muted sm">Read first</span>';
+    return '<button class="rcard" style="--c:' + s.c + '" data-go="' + s.k + '"><div class="top"><div class="rb">' + IC[s.k] + '</div><div class="tt"><b>' + esc(s.t) + '</b></div></div>' +
+      '<p>' + esc(s.d) + '</p><div class="bot">' + c + '<span class="go">' + IC.go + '</span></div></button>';
+  }).join('') + '</div>';
+}
+
+/* ---------- Introduction ---------- */
+function vIntro(m){
+  m.innerHTML = head('intro') +
+  '<div class="card prose"><h2>Introduction</h2>' +
+  '<p>The National Malaria Control Programme (NMCP), Ministry of Health, is undertaking a national mapping of organizations and partners supporting malaria interventions (donor, advisory, prevention, diagnosis, treatment, surveillance, research and related health system strengthening activities) in Sierra Leone. This exercise will establish a comprehensive picture of <b>who is doing what, where, with which resources and over what period</b>, including coverage at district and chiefdom levels.</p>' +
+  '<p>The findings will support coordinated planning, identify service and funding gaps, reduce duplication and strengthen alignment of partner investments with national malaria priorities. We therefore request your organization to complete the <b>Malaria Partner Mapping Tool</b>.</p>' +
+  '<p>Participation is encouraged from all relevant organizations, including development partners, non governmental organizations, faith based organizations, community based organizations, academic institutions and private sector entities. Organizations delivering malaria services through integrated health programmes are also requested to participate, even where they do not have a standalone malaria project.</p></div>' +
+  '<div class="card prose"><h2>Instruction</h2><p>Please follow the steps in the <b>Instructions</b> sheet and submit one consolidated workbook for your organization within one week of receipt. Kindly nominate a focal person to support clarification, validation and subsequent updates.</p></div>' +
+  contactCard() +
+  '<div class="row" style="margin-top:4px"><button class="btn" data-go="instr">Go to Instructions</button></div>';
+}
+function contactCard(){
+  return '<div class="card"><div class="irow"><span class="in k">' + IC.mail + '</span><div><b>Contact</b>For assistance in completing the tool, please contact <b style="display:inline;font-size:inherit">Alex Ogwal</b> at aogwal@leap-global.org or +23280028962.</div></div></div>';
+}
+
+/* ---------- Instructions ---------- */
+function vInstr(m){
+  const steps = [
+    ['Instruction', 'Complete every field of each form, using the drop-down options where they are provided.', 'dir'],
+    ['Partner Directory', 'Enter your organization once, providing its name, organization type, funding partners, agreement or MOU status and the official focal person’s contact details. Use the same unique Partner ID consistently throughout the workbook.', 'dir'],
+    ['Technical Area map', 'Enter one row for each partner, intervention, district and chiefdom combination. For example, an intervention implemented in three chiefdoms requires three separate rows. Include project descriptions, target populations, supported facilities or communities, implementation dates, status, indicators, targets and latest achievements where available.', 'tech'],
+    ['Coordination Contacts', 'Provide the contacts of individuals within the organization who coordinate different programmes, and indicate the relevant technical working groups or coordination forums they can be involved in.', 'con']
+  ];
+  m.innerHTML = head('instr') +
+    '<div class="card prose"><h2>Purpose</h2><p>Maintain a single NMCP view of who is doing what, where, with which resources, for which populations, and over what period.</p></div>' +
+    '<div class="card">' + steps.map((s, i) => '<div class="irow"><span class="in">' + (i + 1) + '</span><div><b>' + esc(s[0]) + '</b>' + esc(s[1]) + '</div></div>').join('') + '</div>' +
+    '<div class="card">' +
+      '<div class="irow"><span class="in k">' + IC.check + '</span><div><b>Data quality</b>Have the information reviewed by your organization’s designated focal person. Where information is unavailable, explain this in the relevant notes or description field rather than entering zero.</div></div>' +
+      '<div class="irow"><span class="in k">' + IC.shield + '</span><div><b>Confidentiality</b>Do not enter personally sensitive information beyond the official professional contact details needed for coordination.</div></div>' +
+      '<div class="irow"><span class="in k">' + IC.mail + '</span><div><b>Queries</b>For assistance in completing the tool, please contact NMCP contact Alex Ogwal at aogwal@leap-global.org or +23280028962.</div></div>' +
+    '</div>' +
+    '<div class="row"><button class="btn" data-go="dir">Start with the Partner Directory</button></div>';
+}
+
+/* ---------- list of entries in a data sheet ---------- */
+const LISTQ = {};
+function summary(k, r){
+  if (k === 'dir') return { id:r.pid, t:r.name + (r.acr ? ' (' + r.acr + ')' : ''), s:[r.otype, r.focal].filter(Boolean).join(' · '), tags:[r.ostat && [r.ostat, r.ostat === 'Active' ? 'ok' : 'off'], r.mou && ['MOU: ' + r.mou], r.pfund && [r.pfund]].filter(Boolean) };
+  if (k === 'tech') return { id:r.pid, t:r.tarea + (r.act ? ' · ' + r.act : ''), s:[r.pname, [r.dist, r.chief].filter(Boolean).join(', ')].filter(Boolean).join(' · '), tags:[r.status && [r.status, r.status === 'Active' ? 'ok' : 'off'], r.level && [r.level], r.pfund && [r.pfund]].filter(Boolean) };
+  const p = partner(r.org);
+  return { id:p ? p.pid : '', t:r.cname, s:[r.role, p ? p.name : ''].filter(Boolean).join(' · '), tags:(r.twg || []).map(x => [x]) };
+}
+function vList(m, k){
+  const s = SH(k), rows = DB[k];
+  const sub = k === 'dir' ? 'One row per organization' : k === 'tech' ? 'One row per partner, intervention, district and chiefdom' : 'Key partner contacts';
+  let pre = '';
+  if (k !== 'dir' && !DB.dir.length) pre = '<div class="note">Add your organization to the Partner Directory first. The Partner ID and name here are taken from it.</div>';
+  m.innerHTML = head(k, s.n + ' · ' + sub) + pre +
+    '<div class="tbar"><input id="q" type="search" placeholder="Search entries" value="' + esc(LISTQ[k] || '') + '" aria-label="Search entries"><button class="btn sm" id="add">' + IC.plus + 'Add entry</button></div>' +
+    '<div class="rl" id="rl"></div>';
+  const draw = () => {
+    const q = (LISTQ[k] || '').toLowerCase();
+    const list = rows.filter(r => !q || JSON.stringify(r).toLowerCase().includes(q));
+    $('#rl').innerHTML = list.length ? list.map(r => {
+      const x = summary(k, r);
+      return '<button class="rec" style="--c:' + s.c + '" data-id="' + r.id + '"><span class="rid">' + esc(x.id || '·') + '</span><span class="rm"><b>' + esc(x.t || 'Untitled') + '</b><small>' + esc(x.s) + '</small>' +
+        (x.tags.length ? '<span class="tags">' + x.tags.map(t => '<span class="tg ' + (t[1] || '') + '">' + esc(t[0]) + '</span>').join('') + '</span>' : '') + '</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>';
+    }).join('') : '<div class="empty">' + (rows.length ? 'No entry matches your search.' : 'No entries yet. Tap Add entry to begin.') + '</div>';
+  };
+  draw();
+  $('#q').addEventListener('input', e => { LISTQ[k] = e.target.value; draw(); });
+  $('#add').addEventListener('click', () => {
+    if (k !== 'dir' && !DB.dir.length) { toast('Add an organization to the Partner Directory first'); return; }
+    openForm(k, null);
+  });
+  $('#rl').addEventListener('click', e => { const b = e.target.closest('.rec'); if (b) openForm(k, rows.find(r => r.id === b.dataset.id)); });
+}
+
+/* ---------- form: each column of the sheet on its own row ---------- */
+function partnerOptions(){ return DB.dir.map(p => [p.pid, p.pid + ' · ' + p.name + (p.acr ? ' (' + p.acr + ')' : '')]); }
+function selectHtml(id, opts, val, ph){
+  return '<select id="' + id + '"><option value="">' + esc(ph || 'Select') + '</option>' +
+    opts.map(o => { const v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o; return '<option value="' + esc(v) + '"' + (String(v) === String(val) ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>';
+}
+function districtHtml(id, val){
+  return '<select id="' + id + '"><option value="">Select district</option>' + REGIONS.map(r =>
+    '<optgroup label="' + esc(r) + ' Region">' + REF.dist.filter(d => d[1] === r).map(([d]) => '<option' + (d === val ? ' selected' : '') + '>' + esc(d) + '</option>').join('') + '</optgroup>').join('') + '</select>';
+}
+function chiefHtml(id, dist, val){
+  const list = (CHIEF_BY_DIST[dist] || []).slice().sort();
+  if (!dist) return '<select id="' + id + '" disabled><option value="">Choose the district first</option></select>';
+  if (!list.length) return '<select id="' + id + '" disabled><option value="">No chiefdoms listed for ' + esc(dist) + '</option></select>';
+  return selectHtml(id, list, val, (/^Western/.test(dist) ? 'Select zone in ' : 'Select chiefdom in ') + dist);
+}
+function fieldInput(k, c, r){
+  const id = 'f_' + c.k, v = r[c.k] == null ? '' : r[c.k];
+  switch (c.type){
+    case 'auto': return '<input id="' + id + '" readonly value="' + esc(v) + '" placeholder="' + (k === 'dir' && c.k === 'pid' ? 'Given when you save' : 'Filled automatically') + '">';
+    case 'select': return selectHtml(id, c.o, v);
+    case 'partner': return selectHtml(id, partnerOptions(), v, 'Select organization');
+    case 'district': return districtHtml(id, v);
+    case 'chiefdom': return '<div id="w_chief">' + chiefHtml(id, r.dist, v) + '</div>';
+    case 'area': return '<textarea id="' + id + '">' + esc(v) + '</textarea>';
+    case 'multi': {
+      const on = Array.isArray(v) ? v : [];
+      return '<div class="checks" id="' + id + '">' + c.o.map(o => '<button type="button" class="ck' + (on.includes(o) ? ' on' : '') + '" data-v="' + esc(o) + '" aria-pressed="' + on.includes(o) + '"><span class="cbx"></span><span>' + esc(o) + '</span></button>').join('') + '</div>';
+    }
+    case 'mdrop': {
+      const on = Array.isArray(v) ? v : [];
+      return '<div class="mdrop" id="' + id + '"><button type="button" class="mtog" aria-expanded="false"><span class="msum"></span></button><div class="mpanel" hidden><div class="checks">' +
+        c.o.map(o => '<button type="button" class="ck' + (on.includes(o) ? ' on' : '') + '" data-v="' + esc(o) + '" aria-pressed="' + on.includes(o) + '"><span class="cbx"></span><span>' + esc(o) + '</span></button>').join('') +
+        '</div><button type="button" class="btn sm mdone">Done</button></div></div>';
+    }
+    default: return '<input id="' + id + '" type="' + (c.type === 'text' ? 'text' : c.type) + '" value="' + esc(v) + '"' + (c.ph ? ' placeholder="' + esc(c.ph) + '"' : '') + (c.type === 'email' ? ' autocomplete="email" inputmode="email"' : c.type === 'tel' ? ' inputmode="tel"' : '') + '>';
+  }
+}
+function openForm(k, rec){
+  const isNew = !rec;
+  const r = rec ? JSON.parse(JSON.stringify(rec)) : { id:uid() };
+  if (isNew && k !== 'dir' && DB.dir.length === 1){ if (k === 'tech'){ r.pid = DB.dir[0].pid; r.pname = DB.dir[0].name; } else r.org = DB.dir[0].pid; }
+  FORM = { k, r, isNew };
+  document.body.dataset.view = 'form';
+  const s = SH(k), cols = COLS[k];
+  $('#main').innerHTML =
+    '<div class="backs"><button class="back" data-go="home">' + IC.home + 'Back to Home</button><button class="back" id="fback">' + IC.back + 'Back to ' + esc(s.t) + '</button></div>' +
+    '<div class="phd" style="--c:' + s.c + '"><div class="rb">' + IC[k] + '</div><div><h1>' + (isNew ? 'New entry' : 'Edit entry') + '</h1><small>' + esc(s.n) + ' · ' + cols.length + ' columns, one per row</small></div></div>' +
+    '<form class="allform" id="frm" novalidate><section class="fsec"><div class="fsh"><i>' + esc(s.n.split('.')[0].length < 3 ? s.n.split('.')[0] : '·') + '</i>' + esc(s.t) + '</div>' +
+    cols.map((c, i) => '<div class="fld" data-k="' + c.k + '"><label for="f_' + c.k + '"><span class="cl">' + (i + 1) + '.</span><span>' + esc(c.l) + (c.req ? ' <span class="req">*</span>' : '') + '</span></label>' +
+      (c.hint ? '<p class="hint">' + esc(c.hint) + '</p>' : '') + fieldInput(k, c, r) + '<div class="ferr"></div></div>').join('') +
+    '</section>' + (isNew ? '' : '<button type="button" class="btn danger" id="fdel" style="flex:0 0 auto">Delete this entry</button>') + '</form>' +
+    '<div class="fbar"><button class="btn sec" id="fcancel">Cancel</button><button class="btn" id="fsave">' + IC.check + 'Save entry</button></div>';
+  scrollTo(0, 0);
+  wireForm();
+}
+function wireForm(){
+  const { k, r } = FORM, cols = COLS[k];
+  /* the primary funder is never ticked again as a secondary funder */
+  const syncNot = () => cols.filter(c => c.not).forEach(c => {
+    const pv = $('#f_' + c.not).value;
+    $('#f_' + c.k).querySelectorAll('.ck').forEach(b => { const off = b.dataset.v === pv; b.disabled = off; if (off){ b.classList.remove('on'); b.setAttribute('aria-pressed','false'); } });
+  });
+  const sumUp = () => document.querySelectorAll('.mdrop').forEach(m => {
+    const on = Array.from(m.querySelectorAll('.ck.on')).map(b => b.dataset.v);
+    m.querySelector('.msum').innerHTML = on.length ? on.map(v => '<span class="tg">' + esc(v) + '</span>').join('') : '<span class="mph">Select (optional)</span>';
+  });
+  /* questions that depend on an earlier answer, such as the MOU dates */
+  const vis = () => { const o = readForm(); cols.forEach(c => { if (c.show) $('.fld[data-k="' + c.k + '"]').classList.toggle('hid', !c.show(o)); }); };
+  syncNot(); sumUp(); vis();
+  $('#frm').addEventListener('click', e => {
+    const t = e.target.closest('.mtog');
+    if (t){ const p = t.nextElementSibling, open = p.hidden; p.hidden = !open; t.setAttribute('aria-expanded', open); return; }
+    if (e.target.closest('.mdone')){ const m = e.target.closest('.mdrop'); m.querySelector('.mpanel').hidden = true; m.querySelector('.mtog').setAttribute('aria-expanded', 'false'); return; }
+    const b = e.target.closest('.ck'); if (!b || b.disabled) return;
+    const on = b.classList.toggle('on'); b.setAttribute('aria-pressed', on); sumUp();
+  });
+  $('#frm').addEventListener('change', e => {
+    const id = e.target.id;
+    if (id === 'f_pfund'){ syncNot(); sumUp(); }
+    vis();
+    if (k === 'tech' && id === 'f_pid'){ const p = partner(e.target.value); $('#f_pname').value = p ? p.name : ''; }
+    if (k === 'tech' && id === 'f_dist') $('#w_chief').innerHTML = chiefHtml('f_chief', e.target.value, '');
+    const f = e.target.closest('.fld'); if (f){ f.classList.remove('bad'); f.querySelector('.ferr').textContent = ''; }
+  });
+  $('#frm').addEventListener('submit', e => e.preventDefault());
+  $('#fback').addEventListener('click', leaveForm);
+  $('#fcancel').addEventListener('click', leaveForm);
+  $('#fsave').addEventListener('click', saveForm);
+  const del = $('#fdel'); if (del) del.addEventListener('click', askDelete);
+}
+function readForm(){
+  const { k, r } = FORM, o = { id:r.id };
+  COLS[k].forEach(c => {
+    const el = $('#f_' + c.k);
+    o[c.k] = c.type === 'multi' || c.type === 'mdrop' ? Array.from(el.querySelectorAll('.ck.on')).map(b => b.dataset.v) : (el ? el.value.trim() : '');
+  });
+  if (k === 'dir') o.pid = r.pid || stampPid(o.acr, o.name);
+  return o;
+}
+function saveForm(){
+  const { k, isNew } = FORM, o = readForm();
+  const errs = {};
+  COLS[k].forEach(c => { if (c.show && !c.show(o)) o[c.k] = ''; });
+  COLS[k].forEach(c => { const v = o[c.k]; if (c.show && !c.show(o)) return; if (c.req && (Array.isArray(v) ? !v.length : !v)) errs[c.k] = 'This field is required.'; });
+  ['email'].forEach(f => { if (o[f] && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o[f])) errs[f] = 'Enter a valid email address.'; });
+  if (o.sd && o.ed && o.ed < o.sd) errs.ed = 'The end date is before the start date.';
+  if (k === 'dir' && o.name && DB.dir.some(p => p.id !== o.id && p.name.toLowerCase() === o.name.toLowerCase())) errs.name = 'This organization is already in the directory.';
+  document.querySelectorAll('.fld').forEach(f => { const m = errs[f.dataset.k] || ''; f.classList.toggle('bad', !!m); f.querySelector('.ferr').textContent = m; });
+  const first = Object.keys(errs)[0];
+  if (first){ document.querySelector('.fld[data-k="' + first + '"]').scrollIntoView({ behavior:'smooth', block:'center' }); toast(Object.keys(errs).length + ' field' + (Object.keys(errs).length > 1 ? 's need' : ' needs') + ' attention'); return; }
+  if (isNew) DB[k].push(o); else DB[k][DB[k].findIndex(x => x.id === o.id)] = o;
+  /* a renamed organization carries its new name into the Technical Area rows */
+  if (k === 'dir') DB.tech.forEach(t => { if (String(t.pid) === String(o.pid)) t.pname = o.name; });
+  persist(); toast('Entry saved'); render();
+}
+function leaveForm(){ render(); }
+function askDelete(){
+  const { k, r } = FORM;
+  let extra = '';
+  if (k === 'dir'){
+    const nt = DB.tech.filter(t => String(t.pid) === String(r.pid)).length, nc = DB.con.filter(c => String(c.org) === String(r.pid)).length;
+    if (nt || nc) extra = ' Its ' + [nt && nt + ' Technical Area ' + (nt > 1 ? 'entries' : 'entry'), nc && nc + ' coordination ' + (nc > 1 ? 'contacts' : 'contact')].filter(Boolean).join(' and ') + ' will be deleted too.';
+  }
+  dialog('<h2>Delete this entry?</h2><p>This cannot be undone.' + esc(extra) + '</p><div class="row"><button class="btn sec" id="dno">Keep it</button><button class="btn danger" id="dyes">Delete</button></div>');
+  $('#dno').onclick = closeDialog;
+  $('#dyes').onclick = () => {
+    DB[k] = DB[k].filter(x => x.id !== r.id);
+    if (k === 'dir'){ DB.tech = DB.tech.filter(t => String(t.pid) !== String(r.pid)); DB.con = DB.con.filter(c => String(c.org) !== String(r.pid)); }
+    persist(); closeDialog(); toast('Entry deleted'); render();
+  };
+}
+
+/* ---------- Reference Lists ---------- */
+function vRef(m){
+  const lists = [
+    ['Organization Type', REF.otype, 'Partner Directory, column D'],
+    ['Professional Area', REF.parea, 'Partner Directory, column E'],
+    ['MOU status', REF.mou, 'Partner Directory, column O'],
+    ['Organisational Status', REF.ostat, 'Partner Directory, column R and Technical Area, column O'],
+    ['Primary Funder', REF.fund, 'Partner Directory, columns G and H and Technical Area, column K'],
+    ['Technical Area', REF.tarea, 'Technical Area, column C'],
+    ['Implementation Level', REF.level, 'Technical Area, column F'],
+    ['Technical Working Group', REF.twg, 'Coordination Contacts, column F']
+  ];
+  const count = (key, val) => {
+    const map = { 'Organization Type':['dir','otype'], 'Professional Area':['dir','parea'], 'MOU status':['dir','mou'], 'Technical Area':['tech','tarea'], 'Implementation Level':['tech','level'] };
+    const n = (sheet, f) => DB[sheet].filter(r => Array.isArray(r[f]) ? r[f].includes(val) : r[f] === val).length;
+    if (key === 'Organisational Status') return n('dir','ostat') + n('tech','status');
+    if (key === 'Primary Funder') return n('dir','pfund') + n('dir','sfund') + n('tech','pfund');
+    if (key === 'Technical Working Group') return n('con','twg');
+    return map[key] ? n(map[key][0], map[key][1]) : 0;
+  };
+  const card = (t, vals, used) => '<details class="reg"><summary><span class="gname">' + esc(t) + '<small>' + vals.length + ' options · ' + esc(used) + '</small></span></summary><div class="vlist">' +
+    vals.map((v, i) => { const c = count(t, v); return '<div class="vrow"><i>' + (i + 1) + '</i><span>' + esc(v) + '</span>' + (c ? '<span class="use">' + c + '</span>' : '') + '</div>'; }).join('') + '</div></details>';
+  const nd = d => DB.tech.filter(r => r.dist === d).length;
+  const geo =
+    '<details class="reg"><summary><span class="gname">Region and District<small>' + REGIONS.length + ' regions, ' + REF.dist.length + ' districts · Technical Area, column G</small></span></summary>' +
+      REGIONS.map(r => '<div class="fs">' + esc(r) + ' Region</div><div class="vlist">' + REF.dist.filter(d => d[1] === r).map(([d]) => '<div class="vrow"><span>' + esc(d) + '</span>' + (nd(d) ? '<span class="use">' + nd(d) + '</span>' : '') + '</div>').join('') + '</div>').join('') + '</details>' +
+    '<details class="reg"><summary><span class="gname">Chiefdom / Zone<small>' + REF.chief.length + ' chiefdoms and Western Area zones by district · Technical Area, column H</small></span></summary>' +
+      REGIONS.map(r => { const ds = REF.dist.filter(d => d[1] === r && CHIEF_BY_DIST[d[0]]); return ds.length ? '<div class="fs">' + esc(r) + ' Region</div>' + ds.map(([d]) => '<div class="chl"><span class="dn">' + esc(d) + ' (' + CHIEF_BY_DIST[d].length + ')</span>' + CHIEF_BY_DIST[d].map(c => '<span class="vc">' + esc(c) + '</span>').join('') + '</div>').join('') : ''; }).join('') + '</details>';
+  m.innerHTML = head('ref', 'Controlled vocabulary for the drop-down fields') +
+    '<p class="muted sm" style="margin:-4px 4px 12px;font-weight:700">Open a list to see its options. The number on the right shows how many entries use that option.</p>' +
+    '<div class="refgrid">' + lists.map(l => card(l[0], l[1], l[2])).join('') + geo + '</div>' +
+    (REF.src ? '<p class="srcl">' + esc(REF.src) + '</p>' : '');
+}
+
+/* ---------- download the workbook (Excel 2003 XML, opens in Excel) ---------- */
+function exportWorkbook(){
+  const total = DB.dir.length + DB.tech.length + DB.con.length;
+  if (!total){ toast('There are no entries to download yet'); return; }
+  const x = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const val = (r, c) => { let v = r[c.k]; if (Array.isArray(v)) v = v.join('; '); if (c.type === 'partner' && c.k === 'org'){ const p = partner(v); v = p ? p.name : ''; } return v; };
+  const sheet = k => {
+    const cols = COLS[k], name = SH(k).n;
+    const hdr = '<Row>' + cols.map(c => '<Cell ss:StyleID="h"><Data ss:Type="String">' + x(c.l + (c.req ? '*' : '')) + '</Data></Cell>').join('') + '</Row>';
+    const rows = DB[k].map(r => '<Row>' + cols.map(c => { const v = val(r, c), num = false;
+      return '<Cell><Data ss:Type="' + (num ? 'Number' : 'String') + '">' + x(v) + '</Data></Cell>'; }).join('') + '</Row>').join('');
+    return '<Worksheet ss:Name="' + x(name) + '"><Table>' + cols.map(() => '<Column ss:Width="150"/>').join('') + hdr + rows + '</Table></Worksheet>';
+  };
+  const xml = '<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>' +
+    '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' +
+    '<Styles><Style ss:ID="h"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#2C6693" ss:Pattern="Solid"/></Style></Styles>' +
+    sheet('dir') + sheet('tech') + sheet('con') + '</Workbook>';
+  const org = DB.dir[0] ? (DB.dir[0].acr || DB.dir[0].name).replace(/[^A-Za-z0-9]+/g, '_') : 'Partner';
+  const filename = 'NMCP_Partner_Mapping_' + org + '_' + new Date().toISOString().slice(0, 10) + '.xls';
+  const fallback = () => {
+    try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([xml], { type:'application/vnd.ms-excel' })); a.download = filename; document.body.appendChild(a); a.click(); a.remove(); toast('Workbook downloaded'); }
+    catch(e){ toast('This viewer cannot download files'); }
+  };
+  (window.claude && claude.use ? claude.use('downloads') : Promise.resolve(null)).then(d => {
+    if (!d) return fallback();
+    return d.save({ filename, data:xml }).then(() => toast('Workbook downloaded'), () => toast('The download was not saved'));
+  }).catch(fallback);
+}
+
+render();
+</script>
+</body>
+</html>
